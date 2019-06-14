@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  mysql:
+    container_name: 'mysql'
+    build:
+      context: ./dockerfile/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: keycloak
+      MYSQL_DATABASE: keycloak
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./db:/var/lib/mysql
+
+  keycloak:
+    image: jboss/keycloak:latest
+    container_name: 'keycloak'
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: db
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      JDBC_PARAMS: "connectTimeout=30000"
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
